@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pages/products_overview_page.dart';
 
 void main() {
   runApp(const MyShop());
@@ -7,11 +8,12 @@ void main() {
 class MyShop extends StatelessWidget {
   const MyShop({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(),
+  Widget build(BuildContext context){
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: ProductsOverviewPage(),
     );
   }
 }
