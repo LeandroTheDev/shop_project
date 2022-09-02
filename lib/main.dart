@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop/models/product_list.dart';
 import 'package:shop/pages/product_detail_page.dart';
 import 'package:shop/utils/app_routes.dart';
 import 'pages/products_overview_page.dart';
@@ -13,19 +15,22 @@ class MyShop extends StatelessWidget {
   @override
   Widget build(BuildContext context){
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ProductsOverviewPage(),
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: const Color.fromARGB(255, 126, 47, 179),
-          secondary: Color.fromARGB(255, 233, 113, 0),
+    return ChangeNotifierProvider(
+      create: (_) => ProductList(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: ProductsOverviewPage(),
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+            primary: const Color.fromARGB(255, 126, 47, 179),
+            secondary: const Color.fromARGB(255, 233, 113, 0),
+          ),
+          fontFamily: "Lato",
         ),
-        fontFamily: "Lato",
+        routes: {
+          AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailPage()
+        },
       ),
-      routes: {
-        AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailPage()
-      },
     );
   }
 }
