@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shop/models/product_list.dart';
 import 'package:shop/pages/product_detail_page.dart';
 import 'package:shop/utils/app_routes.dart';
+import 'models/cart.dart';
 import 'pages/products_overview_page.dart';
 
 void main() {
@@ -13,10 +14,16 @@ class MyShop extends StatelessWidget {
   const MyShop({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context){
-
-    return ChangeNotifierProvider(
-      create: (_) => ProductList(),
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => ProductList(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => Cart(),
+        ),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: ProductsOverviewPage(),
@@ -27,9 +34,7 @@ class MyShop extends StatelessWidget {
           ),
           fontFamily: "Lato",
         ),
-        routes: {
-          AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailPage()
-        },
+        routes: {AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailPage()},
       ),
     );
   }
