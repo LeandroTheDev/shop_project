@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/models/product_list.dart';
+import 'package:shop/pages/cart_page.dart';
 import 'package:shop/pages/product_detail_page.dart';
 import 'package:shop/utils/app_routes.dart';
 import 'models/cart.dart';
@@ -26,7 +27,7 @@ class MyShop extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: ProductsOverviewPage(),
+        home: const ProductsOverviewPage(),
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
             primary: const Color.fromARGB(255, 126, 47, 179),
@@ -34,7 +35,10 @@ class MyShop extends StatelessWidget {
           ),
           fontFamily: "Lato",
         ),
-        routes: {AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailPage()},
+        routes: {
+          AppRoutes.PRODUCT_DETAIL: (ctx) => const ProductDetailPage(),
+          AppRoutes.CART: (ctx) => const CartPage(),
+        },
       ),
     );
   }
