@@ -12,15 +12,15 @@ class ProductItem extends StatelessWidget {
         backgroundImage: NetworkImage(produto.imageUrl),
       ),
       title: Text(produto.name),
-      trailing: Container(
+      trailing: SizedBox(
         width: 100,
         child: Row(children: [
           IconButton(
-            icon: Icon(Icons.edit),
+            icon: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary,),
             onPressed: () {},
           ),
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete, color: Colors.red,),
             onPressed: () {},
           ),
         ]),
