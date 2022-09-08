@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shop/utils/app_routes.dart';
 
@@ -11,22 +10,27 @@ class AppDrawer extends StatelessWidget {
       child: Column(
         children: [
           AppBar(
+            title: const Text('Bem vindo Usuário!'),
             automaticallyImplyLeading: false,
-            title: Text("Bem vindo usuario"),
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.shop),
-            title: Text("Loja"),
+            leading: const Icon(Icons.shop),
+            title: const Text('Loja'),
             onTap: () {
-              Navigator.of(context).pushNamed(AppRoutes.CART);
+              Navigator.of(context).pushReplacementNamed(
+                AppRoutes.home,
+              );
             },
           ),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.payment),
-            title: Text("Pedidos"),
+            leading: const Icon(Icons.payment),
+            title: const Text('Pedidos'),
             onTap: () {
-              Navigator.of(context).pushNamed(AppRoutes.ORDERS);
+              Navigator.of(context).pushReplacementNamed(
+                AppRoutes.orders,
+              );
             },
           ),
         ],

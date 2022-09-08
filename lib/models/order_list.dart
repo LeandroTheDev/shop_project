@@ -1,15 +1,13 @@
 import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:shop/models/cart.dart';
-
-import 'order.dart';
+import 'package:shop/models/order.dart';
 
 class OrderList with ChangeNotifier {
-  List<Order> _items = [];
+  final List<Order> _items = [];
 
   List<Order> get items {
-    return [...items];
+    return [..._items];
   }
 
   int get itemsCount {
@@ -22,10 +20,11 @@ class OrderList with ChangeNotifier {
       Order(
         id: Random().nextDouble().toString(),
         total: cart.totalAmount,
-        products: cart.items.values.toList(),
         date: DateTime.now(),
+        products: cart.items.values.toList(),
       ),
     );
+
     notifyListeners();
   }
 }

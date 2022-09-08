@@ -34,12 +34,12 @@ class Badge extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.center,
-              style: const TextStyle(            
+              style: const TextStyle(
                 fontSize: 10,
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
