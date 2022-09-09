@@ -24,15 +24,29 @@ class _ProductFormPageState extends State<ProductFormPage> {
     final _formData = Map<String, Object>();
 
     void submitForm() {
+      final isValid = _formKey.currentState?.validate() ?? false;
+
+      if (!isValid) {
+        return;
+      }
+
       _formKey.currentState?.save();
       final newProduct = Product(
         id: Random().nextDouble().toString(),
         name: _formData['name'] as String,
         description: _formData['description'] as String,
         price: _formData['price'] as double,
-        imageUrl:  _formData['imageURL'] as String,
+        imageUrl: _formData['imageURL'] as String,
       );
     }
+
+    bool isValidImage(String url) {
+    bool isValidUrl = Uri.tryParse(url)?.hasAbsolutePath ?? false;
+    bool endsWithFile = url.toLowerCase().endsWith('.png') ||
+        url.toLowerCase().endsWith('.jpg') ||
+        url.toLowerCase().endsWith('.jpeg');
+    return isValidUrl && endsWithFile;
+  }
 
     return Scaffold(
       appBar: AppBar(
@@ -51,12 +65,24 @@ class _ProductFormPageState extends State<ProductFormPage> {
           child: ListView(
             children: [
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Nome'),
+                decoration: const InputDecoration(
+                  labelText: 'Nome',
+                ),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
                   FocusScope.of(context).requestFocus(_priceFocus);
                 },
                 onSaved: (name) => _formData['name'] = name ?? '-',
+                validator: (_name) {
+                  final name = _name ?? '';
+                  if (name.trim().isEmpty) {
+                    return 'Precisa ter um Nome';
+                  }
+                  if (name.trim().length < 3) {
+                    return 'Precisa ter mais de 3 letras';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
                   decoration: const InputDecoration(labelText: 'Preço'),
@@ -67,6 +93,16 @@ class _ProductFormPageState extends State<ProductFormPage> {
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_descriptionFocus);
                   },
+                  validator: (_price) {
+                  final priceString = _price ?? '';
+                  final price = double.tryParse(priceString) ?? -1;
+
+                  if (price <= 0) {
+                    return 'Informe um preço válido.';
+                  }
+
+                  return null;
+                },
                   onSaved: (price) =>
                       _formData['price'] = double.parse(price ?? '0')),
               TextFormField(
@@ -77,7 +113,18 @@ class _ProductFormPageState extends State<ProductFormPage> {
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_imageURLFocus);
                   },
-                  onSaved: (description) => _formData['description'] = description ?? '-'),
+                  validator: (_description) {
+                  final description = _description ?? '';
+                  if (description.trim().isEmpty) {
+                    return 'Precisa ter um Nome';
+                  }
+                  if (description.trim().length < 10) {
+                    return 'Precisa ter mais de 10 letras';
+                  }
+                  return null;
+                },
+                  onSaved: (description) =>
+                      _formData['description'] = description ?? '-'),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -90,7 +137,15 @@ class _ProductFormPageState extends State<ProductFormPage> {
                       keyboardType: TextInputType.url,
                       controller: _imageURLController,
                       onFieldSubmitted: (_) => submitForm(),
-                      onSaved: (imageURL) => _formData['imageURL'] = imageURL ?? '-',
+                      onSaved: (imageURL) =>
+                          _formData['imageURL'] = imageURL ?? '-',
+                      validator: (_imageURL) {
+                        final imageURL = _imageURL ?? '';
+                        if(isValidImage(imageURL)){
+                          return 'Informe uma URL válida';
+                        }
+                        return null;
+                      }
                     ),
                   ),
                   Container(
