@@ -16,7 +16,9 @@ class ProductPage extends StatelessWidget {
         title: const Text('Gerenciar Produtos'),
         actions: [
           IconButton(
-            onPressed: () {Navigator.of(context).pushNamed(AppRoutes.productsForm);},
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRoutes.productsForm);
+            },
             icon: Icon(Icons.add),
           )
         ],
