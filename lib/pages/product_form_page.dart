@@ -1,8 +1,6 @@
-import 'dart:ffi';
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import 'package:shop/models/product_list.dart';
 import '../models/product.dart';
 
 class ProductFormPage extends StatefulWidget {
@@ -13,34 +11,55 @@ class ProductFormPage extends StatefulWidget {
 }
 
 class _ProductFormPageState extends State<ProductFormPage> {
+  final _priceFocus = FocusNode();
+  final _descriptionFocus = FocusNode();
+  final _imageURLFocus = FocusNode();
+  final _imageURLController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+  final _formData = Map<String, Object>();
+
   @override
-  Widget build(BuildContext context) {
-    final _priceFocus = FocusNode();
-    final _descriptionFocus = FocusNode();
-    final _imageURLFocus = FocusNode();
-    final _imageURLController = TextEditingController();
+  void initState() {
+    super.initState();
+    _imageURLFocus.addListener(updateImage);
+  }
 
-    final _formKey = GlobalKey<FormState>();
-    final _formData = Map<String, Object>();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    void submitForm() {
-      final isValid = _formKey.currentState?.validate() ?? false;
+    if (_formData.isEmpty) {
+      final arg = ModalRoute.of(context)?.settings.arguments;
 
-      if (!isValid) {
-        return;
+      if (arg != null) {
+        final product = arg as Product;
+        _formData['id'] = product.id;
+        _formData['name'] = product.name;
+        _formData['price'] = product.price;
+        _formData['description'] = product.description;
+        _formData['imageUrl'] = product.imageUrl;
+
+        _imageURLController.text = product.imageUrl;
       }
-
-      _formKey.currentState?.save();
-      final newProduct = Product(
-        id: Random().nextDouble().toString(),
-        name: _formData['name'] as String,
-        description: _formData['description'] as String,
-        price: _formData['price'] as double,
-        imageUrl: _formData['imageURL'] as String,
-      );
     }
+  }
 
-    bool isValidImage(String url) {
+  @override
+  void dispose() {
+    super.dispose();
+    _priceFocus.dispose();
+    _descriptionFocus.dispose();
+
+    _imageURLFocus.removeListener(updateImage);
+    _imageURLFocus.dispose();
+  }
+
+  void updateImage() {
+    setState(() {});
+  }
+
+  bool isValidImage(String url) {
     bool isValidUrl = Uri.tryParse(url)?.hasAbsolutePath ?? false;
     bool endsWithFile = url.toLowerCase().endsWith('.png') ||
         url.toLowerCase().endsWith('.jpg') ||
@@ -48,6 +67,25 @@ class _ProductFormPageState extends State<ProductFormPage> {
     return isValidUrl && endsWithFile;
   }
 
+  void submitForm() {
+    final isValid = _formKey.currentState?.validate() ?? false;
+
+    if (!isValid) {
+      return;
+    }
+
+    _formKey.currentState?.save();
+
+    Provider.of<ProductList>(
+      context,
+      listen: false,
+    ).saveProduct(_formData);
+
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Formulario"),
@@ -65,6 +103,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: _formData['name']?.toString(),
                 decoration: const InputDecoration(
                   labelText: 'Nome',
                 ),
@@ -85,6 +124,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 },
               ),
               TextFormField(
+                  initialValue: _formData['price']?.toString(),
                   decoration: const InputDecoration(labelText: 'Preço'),
                   textInputAction: TextInputAction.next,
                   focusNode: _priceFocus,
@@ -94,18 +134,19 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     FocusScope.of(context).requestFocus(_descriptionFocus);
                   },
                   validator: (_price) {
-                  final priceString = _price ?? '';
-                  final price = double.tryParse(priceString) ?? -1;
+                    final priceString = _price ?? '';
+                    final price = double.tryParse(priceString) ?? -1;
 
-                  if (price <= 0) {
-                    return 'Informe um preço válido.';
-                  }
+                    if (price <= 0) {
+                      return 'Informe um preço válido.';
+                    }
 
-                  return null;
-                },
+                    return null;
+                  },
                   onSaved: (price) =>
                       _formData['price'] = double.parse(price ?? '0')),
               TextFormField(
+                  initialValue: _formData['description']?.toString(),
                   decoration: const InputDecoration(labelText: 'Descrição'),
                   focusNode: _descriptionFocus,
                   keyboardType: TextInputType.multiline,
@@ -114,15 +155,15 @@ class _ProductFormPageState extends State<ProductFormPage> {
                     FocusScope.of(context).requestFocus(_imageURLFocus);
                   },
                   validator: (_description) {
-                  final description = _description ?? '';
-                  if (description.trim().isEmpty) {
-                    return 'Precisa ter um Nome';
-                  }
-                  if (description.trim().length < 10) {
-                    return 'Precisa ter mais de 10 letras';
-                  }
-                  return null;
-                },
+                    final description = _description ?? '';
+                    if (description.trim().isEmpty) {
+                      return 'Precisa ter um Nome';
+                    }
+                    if (description.trim().length < 10) {
+                      return 'Precisa ter mais de 10 letras';
+                    }
+                    return null;
+                  },
                   onSaved: (description) =>
                       _formData['description'] = description ?? '-'),
               Row(
@@ -130,23 +171,22 @@ class _ProductFormPageState extends State<ProductFormPage> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                      decoration:
-                          const InputDecoration(labelText: 'URL da Imagem'),
-                      textInputAction: TextInputAction.done,
-                      focusNode: _imageURLFocus,
-                      keyboardType: TextInputType.url,
-                      controller: _imageURLController,
-                      onFieldSubmitted: (_) => submitForm(),
-                      onSaved: (imageURL) =>
-                          _formData['imageURL'] = imageURL ?? '-',
-                      validator: (_imageURL) {
-                        final imageURL = _imageURL ?? '';
-                        if(isValidImage(imageURL)){
+                        decoration:
+                            const InputDecoration(labelText: 'URL da Imagem'),
+                        textInputAction: TextInputAction.done,
+                        focusNode: _imageURLFocus,
+                        keyboardType: TextInputType.url,
+                        controller: _imageURLController,
+                        onFieldSubmitted: (_) => submitForm(),
+                        onSaved: (imageURL) =>
+                            _formData['imageURL'] = imageURL ?? '-',
+                        validator: (_imageURL) {
+                          final imageURL = _imageURL ?? '';
+                          if (isValidImage(imageURL)) {
+                            return null;
+                          }
                           return 'Informe uma URL válida';
-                        }
-                        return null;
-                      }
-                    ),
+                        }),
                   ),
                   Container(
                     alignment: Alignment.center,
