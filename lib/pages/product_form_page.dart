@@ -13,8 +13,8 @@ class ProductFormPage extends StatefulWidget {
 class _ProductFormPageState extends State<ProductFormPage> {
   final _priceFocus = FocusNode();
   final _descriptionFocus = FocusNode();
-  final _imageURLFocus = FocusNode();
-  final _imageURLController = TextEditingController();
+  final _imageUrlFocus = FocusNode();
+  final _imageUrlController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   final _formData = Map<String, Object>();
@@ -22,7 +22,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
   @override
   void initState() {
     super.initState();
-    _imageURLFocus.addListener(updateImage);
+    _imageUrlFocus.addListener(updateImage);
   }
 
   @override
@@ -40,7 +40,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
         _formData['description'] = product.description;
         _formData['imageUrl'] = product.imageUrl;
 
-        _imageURLController.text = product.imageUrl;
+        _imageUrlController.text = product.imageUrl;
       }
     }
   }
@@ -51,8 +51,8 @@ class _ProductFormPageState extends State<ProductFormPage> {
     _priceFocus.dispose();
     _descriptionFocus.dispose();
 
-    _imageURLFocus.removeListener(updateImage);
-    _imageURLFocus.dispose();
+    _imageUrlFocus.removeListener(updateImage);
+    _imageUrlFocus.dispose();
   }
 
   void updateImage() {
@@ -152,7 +152,7 @@ class _ProductFormPageState extends State<ProductFormPage> {
                   keyboardType: TextInputType.multiline,
                   maxLines: 3,
                   onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_imageURLFocus);
+                    FocusScope.of(context).requestFocus(_imageUrlFocus);
                   },
                   validator: (_description) {
                     final description = _description ?? '';
@@ -174,12 +174,12 @@ class _ProductFormPageState extends State<ProductFormPage> {
                         decoration:
                             const InputDecoration(labelText: 'URL da Imagem'),
                         textInputAction: TextInputAction.done,
-                        focusNode: _imageURLFocus,
+                        focusNode: _imageUrlFocus,
                         keyboardType: TextInputType.url,
-                        controller: _imageURLController,
+                        controller: _imageUrlController,
                         onFieldSubmitted: (_) => submitForm(),
                         onSaved: (imageURL) =>
-                            _formData['imageURL'] = imageURL ?? '-',
+                            _formData['imageUrl'] = imageURL ?? '-',
                         validator: (_imageURL) {
                           final imageURL = _imageURL ?? '';
                           if (isValidImage(imageURL)) {
@@ -201,12 +201,9 @@ class _ProductFormPageState extends State<ProductFormPage> {
                       color: Colors.grey,
                       width: 2,
                     )),
-                    child: _imageURLController.text.isEmpty
+                    child: _imageUrlController.text.isEmpty
                         ? const Text('Informe a URL')
-                        : FittedBox(
-                            child: Image.network(_imageURLController.text),
-                            fit: BoxFit.cover,
-                          ),
+                        : Image.network(_imageUrlController.text),
                   )
                 ],
               ),
