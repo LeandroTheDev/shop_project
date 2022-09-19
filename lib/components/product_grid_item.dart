@@ -4,19 +4,24 @@ import 'package:shop/models/cart.dart';
 import 'package:shop/models/product.dart';
 import 'package:shop/utils/app_routes.dart';
 
-class ProductGridItem extends StatelessWidget {
+class ProductGridItem extends StatefulWidget {
   const ProductGridItem({Key? key}) : super(key: key);
 
   @override
+  State<ProductGridItem> createState() => _ProductGridItemState();
+}
+
+class _ProductGridItemState extends State<ProductGridItem> {
+  @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
-    final cart = Provider.of<Cart>(context, listen: false);
+    final cart = Provider.of<Cart>(context, listen: true);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         footer: GridTileBar(
-          backgroundColor: Colors.black87,
+          backgroundColor: const Color.fromARGB(125, 0, 0, 0),
           leading: Consumer<Product>(
             builder: (ctx, product, _) => IconButton(
               onPressed: () {
@@ -32,7 +37,7 @@ class ProductGridItem extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           trailing: IconButton(
-            icon: const Icon(Icons.shopping_cart),
+            icon: const Icon(Icons.shopping_cart_outlined),
             color: Theme.of(context).colorScheme.secondary,
             onPressed: () {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -42,7 +47,9 @@ class ProductGridItem extends StatelessWidget {
                   duration: const Duration(seconds: 3),
                   action: SnackBarAction(
                     label: 'DESFAZER',
-                    onPressed: (){cart.removeSingleItem(product.id);},
+                    onPressed: () {
+                      cart.removeSingleItem(product.id);
+                    },
                   ),
                 ),
               );
