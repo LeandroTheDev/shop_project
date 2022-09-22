@@ -1,8 +1,7 @@
 import 'package:shop/pages/products_overview_page.dart';
 
 class AppRoutes {
-  static const auth = '/';
-  static const home = '/home';
+  static const authorhome = '/';
   static const productDetail = '/product-detail';
   static const cart = '/cart';
   static const orders = '/orders';

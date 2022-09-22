@@ -8,7 +8,10 @@ import 'package:shop/models/order.dart';
 import '../utils/constants.dart';
 
 class OrderList with ChangeNotifier {
-  final List<Order> _items = [];
+  final String _token;
+  final List<Order> _items;
+
+  OrderList(this._token, this._items);
 
   List<Order> get items {
     return [..._items];
@@ -19,15 +22,15 @@ class OrderList with ChangeNotifier {
   }
 
   Future<void> loadOrders() async {
-    _items.clear();
+    List<Order> items = [];
 
     final response = await http.get(
-      Uri.parse('${Constants.ordersUrl}.json'),
+      Uri.parse('${Constants.ordersUrl}.json?auth=$_token'),
     );
     if (response.body == 'null') return;
     Map<String, dynamic> data = jsonDecode(response.body);
     data.forEach((orderId, orderData) {
-      _items.add(
+      items.add(
         Order(
           id: orderId,
           date: DateTime.parse(orderData['date']),
@@ -44,6 +47,7 @@ class OrderList with ChangeNotifier {
         ),
       );
     });
+    _items.reversed.toList();
     notifyListeners();
   }
 
@@ -51,7 +55,7 @@ class OrderList with ChangeNotifier {
     final date = DateTime.now();
 
     final response = await http.post(
-      Uri.parse('${Constants.ordersUrl}.json'),
+      Uri.parse('${Constants.ordersUrl}.json?auth=$_token'),
       body: jsonEncode(
         {
           "total": cart.totalAmount,
