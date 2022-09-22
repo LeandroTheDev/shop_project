@@ -27,7 +27,7 @@ class _ProductGridItemState extends State<ProductGridItem> {
           leading: Consumer<Product>(
             builder: (ctx, product, _) => IconButton(
               onPressed: () {
-                product.toggleFavorite(auth.token ?? '');
+                product.toggleFavorite();
               },
               icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
