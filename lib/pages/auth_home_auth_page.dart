@@ -6,11 +6,22 @@ import 'package:shop/pages/products_overview_page.dart';
 import '../models/auth.dart';
 
 class AuthHomePage extends StatelessWidget {
-  const AuthHomePage({ Key? key }) : super(key: key);
+  const AuthHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Auth auth = Provider.of(context);
-    return auth.isAuth ? const ProductsOverviewPage() : const AuthPage();
+    return FutureBuilder(
+      future: auth.tryAutoLogin(),
+      builder: (ctx, snapshot) {
+        if(snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if(snapshot.error != null){
+          return const Center(child: Text('Ocorreu um Erro'));
+        } else {
+          return auth.isAuth ? ProductsOverviewPage() : AuthPage();
+        }
+      }
+    );
   }
 }
